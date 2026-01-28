@@ -12,4 +12,5 @@ public class AppDbContext : DbContext
     public DbSet<ServiceItem> Services { get; set; } = null!;
     public DbSet<Devis> Devis { get; set; } = null!;
     public DbSet<DevisItem> DevisItems { get; set; } = null!;
+    public DbSet<Facture> Factures { get; set; } = null!;
 }
