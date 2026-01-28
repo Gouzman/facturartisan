@@ -89,6 +89,7 @@
 /Users/gouzman/Documents/facturartisan/FacturArtisan.Api/obj/Debug/net8.0/FacturArtisan.Api.csproj.CoreCompileInputs.cache
 /Users/gouzman/Documents/facturartisan/FacturArtisan.Api/obj/Debug/net8.0/FacturArtisan.Api.MvcApplicationPartsAssemblyInfo.cs
 /Users/gouzman/Documents/facturartisan/FacturArtisan.Api/obj/Debug/net8.0/FacturArtisan.Api.MvcApplicationPartsAssemblyInfo.cache
+/Users/gouzman/Documents/facturartisan/FacturArtisan.Api/obj/Debug/net8.0/FacturArtisan.Api.sourcelink.json
 /Users/gouzman/Documents/facturartisan/FacturArtisan.Api/obj/Debug/net8.0/staticwebassets.build.json
 /Users/gouzman/Documents/facturartisan/FacturArtisan.Api/obj/Debug/net8.0/staticwebassets.development.json
 /Users/gouzman/Documents/facturartisan/FacturArtisan.Api/obj/Debug/net8.0/staticwebassets/msbuild.FacturArtisan.Api.Microsoft.AspNetCore.StaticWebAssets.props
