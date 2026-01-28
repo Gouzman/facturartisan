@@ -1,7 +1,9 @@
 using FacturArtisan.Api.Data;
 using FacturArtisan.Api.Models;
+using FacturArtisan.Api.Pdf;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using QuestPDF.Fluent;
 
 namespace FacturArtisan.Api.Controllers;
 
@@ -16,7 +18,6 @@ public class FacturesController : ControllerBase
         _db = db;
     }
 
-    // Liste des factures
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -29,7 +30,6 @@ public class FacturesController : ControllerBase
         return Ok(factures);
     }
 
-    // Créer une facture à partir d'un devis
     [HttpPost("from-devis/{devisId}")]
     public async Task<IActionResult> CreateFromDevis(Guid devisId)
     {
@@ -56,7 +56,6 @@ public class FacturesController : ControllerBase
         return Ok(facture);
     }
 
-    // Marquer comme payée
     [HttpPut("{id}/payer")]
     public async Task<IActionResult> MarquerPayee(Guid id)
     {
@@ -67,5 +66,25 @@ public class FacturesController : ControllerBase
         await _db.SaveChangesAsync();
 
         return Ok(facture);
+    }
+
+    // 🔥 NOUVEAU — Télécharger PDF
+    [HttpGet("{id}/pdf")]
+    public async Task<IActionResult> GetPdf(Guid id)
+    {
+        var facture = await _db.Factures
+            .Include(f => f.Devis)
+                .ThenInclude(d => d.Client)
+            .Include(f => f.Devis)
+                .ThenInclude(d => d.Items)
+                    .ThenInclude(i => i.ServiceItem)
+            .FirstOrDefaultAsync(f => f.Id == id);
+
+        if (facture == null) return NotFound();
+
+        var document = new FacturePdfDocument(facture);
+        var pdfBytes = document.GeneratePdf();
+
+        return File(pdfBytes, "application/pdf", $"facture-{facture.Numero}.pdf");
     }
 }

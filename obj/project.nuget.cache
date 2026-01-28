@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "7lRyDBIishI=",
+  "dgSpecHash": "8oLzN8iAXZI=",
   "success": true,
   "projectFilePath": "/Users/gouzman/Documents/facturartisan/FacturArtisan.Api/FacturArtisan.Api.csproj",
   "expectedPackageFiles": [
@@ -31,6 +31,7 @@
     "/Users/gouzman/.nuget/packages/mono.texttemplating/2.2.1/mono.texttemplating.2.2.1.nupkg.sha512",
     "/Users/gouzman/.nuget/packages/npgsql/8.0.2/npgsql.8.0.2.nupkg.sha512",
     "/Users/gouzman/.nuget/packages/npgsql.entityframeworkcore.postgresql/8.0.2/npgsql.entityframeworkcore.postgresql.8.0.2.nupkg.sha512",
+    "/Users/gouzman/.nuget/packages/questpdf/2024.3.0/questpdf.2024.3.0.nupkg.sha512",
     "/Users/gouzman/.nuget/packages/swashbuckle.aspnetcore/6.5.0/swashbuckle.aspnetcore.6.5.0.nupkg.sha512",
     "/Users/gouzman/.nuget/packages/swashbuckle.aspnetcore.swagger/6.5.0/swashbuckle.aspnetcore.swagger.6.5.0.nupkg.sha512",
     "/Users/gouzman/.nuget/packages/swashbuckle.aspnetcore.swaggergen/6.5.0/swashbuckle.aspnetcore.swaggergen.6.5.0.nupkg.sha512",
