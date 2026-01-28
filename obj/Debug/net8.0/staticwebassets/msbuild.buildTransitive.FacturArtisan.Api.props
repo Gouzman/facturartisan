@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../buildMultiTargeting/FacturArtisan.Api.props" />
+</Project>
