@@ -129,3 +129,15 @@
 /Users/gouzman/Documents/facturartisan/FacturArtisan.Api/obj/Debug/net8.0/FacturArtisan.Api.pdb
 /Users/gouzman/Documents/facturartisan/FacturArtisan.Api/obj/Debug/net8.0/FacturArtisan.Api.genruntimeconfig.cache
 /Users/gouzman/Documents/facturartisan/FacturArtisan.Api/obj/Debug/net8.0/ref/FacturArtisan.Api.dll
+/Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/publish/web.config
+/Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/publish/appsettings.Development.json
+/Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/publish/appsettings.json
+/Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/publish/FacturArtisan.Api.deps.json
+/Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/publish/FacturArtisan.Api.runtimeconfig.json
+/Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/publish/global.json
+/Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/publish/publish/web.config
+/Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/publish/publish/appsettings.Development.json
+/Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/publish/publish/appsettings.json
+/Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/publish/publish/FacturArtisan.Api.deps.json
+/Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/publish/publish/FacturArtisan.Api.runtimeconfig.json
+/Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/publish/publish/global.json
