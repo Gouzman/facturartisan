@@ -17,6 +17,17 @@ Swagger:
 - `ENABLE_SWAGGER=true` pour activer Swagger en production (sinon OFF)
 - `SWAGGER_ADMIN_EMAILS=email1@x.com,email2@x.com` pour restreindre l'accès Swagger (JWT requis)
 
+Reverse proxy (Nginx):
+- `TRUSTED_PROXIES` (optionnel) : liste d'IPs du/des reverse-proxy (séparées par des virgules)
+- `TRUSTED_NETWORKS` (optionnel) : liste CIDR des réseaux du proxy (séparées par des virgules)
+
+Exemples:
+
+```bash
+export TRUSTED_PROXIES="127.0.0.1"
+export TRUSTED_NETWORKS="172.17.0.0/16"
+```
+
 ## CORS (multi-environment)
 
 En production, la policy `ProductionCors` autorise uniquement:
@@ -66,3 +77,15 @@ sudo systemctl enable --now facturartisan-api
 sudo systemctl status facturartisan-api --no-pager
 sudo journalctl -u facturartisan-api -f
 ```
+
+## Nginx (headers proxy)
+
+Dans ton vhost Nginx qui fait `proxy_pass` vers Kestrel, assure-toi d'avoir:
+
+```nginx
+proxy_set_header Host $host;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+proxy_set_header X-Forwarded-Proto $scheme;
+```
+
+Sans ça, le rate limiting IP-based et les URLs/scheme peuvent être faux côté API.

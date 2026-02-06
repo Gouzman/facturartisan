@@ -196,10 +196,43 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
     options.ForwardLimit = 1;
 
-    // Si Nginx est sur la même machine (proxy_pass vers 127.0.0.1), c'est safe.
-    // Si ton proxy est ailleurs (Docker bridge / autre host), ajoute ici son IP.
+    // Par défaut, on fait confiance au proxy local (Nginx en reverse proxy sur la même machine).
     options.KnownProxies.Add(IPAddress.Loopback);
     options.KnownProxies.Add(IPAddress.IPv6Loopback);
+
+    // Production: si ton reverse-proxy n'est pas en loopback (Docker/VM/autre host), configure:
+    // TRUSTED_PROXIES="127.0.0.1,10.0.0.10"
+    // TRUSTED_NETWORKS="172.17.0.0/16,10.0.0.0/8"
+    var trustedProxies = Environment.GetEnvironmentVariable("TRUSTED_PROXIES");
+    if (!string.IsNullOrWhiteSpace(trustedProxies))
+    {
+        foreach (var ipStr in trustedProxies.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            if (IPAddress.TryParse(ipStr, out var ip))
+                options.KnownProxies.Add(ip);
+        }
+    }
+
+    var trustedNetworks = Environment.GetEnvironmentVariable("TRUSTED_NETWORKS");
+    if (!string.IsNullOrWhiteSpace(trustedNetworks))
+    {
+        foreach (var cidr in trustedNetworks.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            var parts = cidr.Split('/', 2, StringSplitOptions.TrimEntries);
+            if (parts.Length != 2) continue;
+            if (!IPAddress.TryParse(parts[0], out var baseAddress)) continue;
+            if (!int.TryParse(parts[1], out var prefixLength)) continue;
+
+            try
+            {
+                options.KnownNetworks.Add(new Microsoft.AspNetCore.HttpOverrides.IPNetwork(baseAddress, prefixLength));
+            }
+            catch
+            {
+                // Ignore invalid CIDR
+            }
+        }
+    }
 });
 
 // FluentValidation
@@ -302,6 +335,14 @@ builder.Services.AddSwaggerGen(c =>
 var app = builder.Build();
 
 app.UseForwardedHeaders();
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();
+}
+
+// Avec UseForwardedHeaders au-dessus, IsHttps est correct derrière Nginx.
+app.UseHttpsRedirection();
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
