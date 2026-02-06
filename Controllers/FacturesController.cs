@@ -1,70 +1,56 @@
-using FacturArtisan.Api.Data;
-using FacturArtisan.Api.Models;
-using FacturArtisan.Api.Pdf;
+using FacturArtisan.Api.Application.Interfaces;
+using FacturArtisan.Api.Application.DTOs.Factures;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using QuestPDF.Fluent;
 
 namespace FacturArtisan.Api.Controllers;
 
 [ApiController]
 [Route("api/factures")]
+[Authorize]
 public class FacturesController : ControllerBase
 {
-    private readonly AppDbContext _db;
+    private readonly IFactureService _factures;
 
-    public FacturesController(AppDbContext db)
+    public FacturesController(IFactureService factures)
     {
-        _db = db;
+        _factures = factures;
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] CreateFactureRequest request)
+    {
+        return await CreateFromDevis(request.DevisId);
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
     {
-        var factures = await _db.Factures
-            .Include(f => f.Devis)
-                .ThenInclude(d => d.Client)
-            .OrderByDescending(f => f.CreatedAt)
-            .ToListAsync();
+        if (page < 1) return BadRequest("page doit être >= 1");
+        if (pageSize < 1) return BadRequest("pageSize doit être >= 1");
+        if (pageSize > 100) pageSize = 100;
 
-        return Ok(factures);
+        var result = await _factures.GetFactures(page, pageSize);
+        return Ok(result);
     }
 
     [HttpPost("from-devis/{devisId}")]
     public async Task<IActionResult> CreateFromDevis(Guid devisId)
     {
-        var devis = await _db.Devis
-            .Include(d => d.Items)
-            .FirstOrDefaultAsync(d => d.Id == devisId);
+        var (ok, error, facture) = await _factures.CreateFromDevis(devisId);
+        if (ok && facture != null) return Ok(facture);
 
-        if (devis == null)
-            return NotFound("Devis introuvable");
+        if (string.Equals(error, "Devis introuvable", StringComparison.OrdinalIgnoreCase))
+            return NotFound(error);
 
-        var numero = $"FAC-{DateTime.UtcNow:yyyyMMddHHmmss}";
-
-        var facture = new Facture
-        {
-            DevisId = devis.Id,
-            Total = devis.Total,
-            Numero = numero,
-            Statut = "NonPayee"
-        };
-
-        _db.Factures.Add(facture);
-        await _db.SaveChangesAsync();
-
-        return Ok(facture);
+        return BadRequest(error ?? "Erreur lors de la création de la facture");
     }
 
     [HttpPut("{id}/payer")]
     public async Task<IActionResult> MarquerPayee(Guid id)
     {
-        var facture = await _db.Factures.FindAsync(id);
+        var facture = await _factures.MarkPaid(id);
         if (facture == null) return NotFound();
-
-        facture.Statut = "Payee";
-        await _db.SaveChangesAsync();
-
         return Ok(facture);
     }
 
@@ -72,19 +58,9 @@ public class FacturesController : ControllerBase
     [HttpGet("{id}/pdf")]
     public async Task<IActionResult> GetPdf(Guid id)
     {
-        var facture = await _db.Factures
-            .Include(f => f.Devis)
-                .ThenInclude(d => d.Client)
-            .Include(f => f.Devis)
-                .ThenInclude(d => d.Items)
-                    .ThenInclude(i => i.ServiceItem)
-            .FirstOrDefaultAsync(f => f.Id == id);
+        var (ok, pdfBytes, fileName) = await _factures.GetFacturePdf(id);
+        if (!ok || pdfBytes == null || string.IsNullOrWhiteSpace(fileName)) return NotFound();
 
-        if (facture == null) return NotFound();
-
-        var document = new FacturePdfDocument(facture);
-        var pdfBytes = document.GeneratePdf();
-
-        return File(pdfBytes, "application/pdf", $"facture-{facture.Numero}.pdf");
+        return File(pdfBytes, "application/pdf", fileName);
     }
 }

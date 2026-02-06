@@ -1,19 +1,19 @@
-using FacturArtisan.Api.Data;
-using FacturArtisan.Api.DTOs;
+using FacturArtisan.Api.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace FacturArtisan.Api.Controllers;
 
 [ApiController]
 [Route("api/dashboard")]
+[Authorize]
 public class DashboardController : ControllerBase
 {
-    private readonly AppDbContext _db;
+    private readonly IDashboardService _dashboard;
 
-    public DashboardController(AppDbContext db)
+    public DashboardController(IDashboardService dashboard)
     {
-        _db = db;
+        _dashboard = dashboard;
     }
 
     [HttpGet("stats")]
@@ -21,38 +21,8 @@ public class DashboardController : ControllerBase
     {
         try
         {
-            var nowUtc = DateTime.UtcNow;
-
-            var debutMois = new DateTime(
-                nowUtc.Year, 
-                nowUtc.Month, 
-                1, 0, 0, 0, 
-                DateTimeKind.Utc
-            );
-
-            var finMois = debutMois.AddMonths(1);
-
-            var facturesMois = await _db.Factures
-                .Where(f => f.CreatedAt != null)
-                .Where(f => f.CreatedAt >= debutMois && f.CreatedAt < finMois)
-                .ToListAsync();
-
-            var totalMois = facturesMois.Sum(f => f.Total);
-            var totalEncaisse = facturesMois
-                .Where(f => f.Statut == "Payee")
-                .Sum(f => f.Total);
-
-            var totalEnAttente = facturesMois
-                .Where(f => f.Statut != "Payee")
-                .Sum(f => f.Total);
-
-            return Ok(new DashboardStatsDto
-            {
-                TotalMois = totalMois,
-                TotalEncaisse = totalEncaisse,
-                TotalEnAttente = totalEnAttente,
-                NombreFactures = facturesMois.Count
-            });
+            var stats = await _dashboard.GetMonthlyStatsUtc();
+            return Ok(stats);
         }
         catch (Exception ex)
         {

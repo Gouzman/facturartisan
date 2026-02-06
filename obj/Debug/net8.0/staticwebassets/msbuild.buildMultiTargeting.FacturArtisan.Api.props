@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="../build/FacturArtisan.Api.props" />
-</Project>

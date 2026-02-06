@@ -83,3 +83,45 @@ VALUES ('20260128214032_AddFactures', '8.0.2');
 
 COMMIT;
 
+START TRANSACTION;
+
+CREATE TABLE "Users" (
+    "Id" uuid NOT NULL,
+    "Email" text NOT NULL,
+    "PasswordHash" text NOT NULL,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_Users" PRIMARY KEY ("Id")
+);
+
+CREATE TABLE "RefreshTokens" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "TokenHash" text NOT NULL,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    "ExpiresAt" timestamp with time zone NOT NULL,
+    "RevokedAt" timestamp with time zone NULL,
+    CONSTRAINT "PK_RefreshTokens" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_RefreshTokens_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id") ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX "IX_Users_Email" ON "Users" ("Email");
+CREATE UNIQUE INDEX "IX_RefreshTokens_TokenHash" ON "RefreshTokens" ("TokenHash");
+CREATE INDEX "IX_RefreshTokens_UserId" ON "RefreshTokens" ("UserId");
+
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20260206153254_AddJwtAuth', '8.0.2');
+
+COMMIT;
+
+START TRANSACTION;
+
+CREATE INDEX "IX_Factures_CreatedAt" ON "Factures" ("CreatedAt");
+CREATE UNIQUE INDEX "IX_Factures_Numero" ON "Factures" ("Numero");
+CREATE INDEX "IX_Factures_Statut" ON "Factures" ("Statut");
+CREATE INDEX "IX_Devis_CreatedAt" ON "Devis" ("CreatedAt");
+
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20260206163856_AddQueryIndexes', '8.0.2');
+
+COMMIT;
+

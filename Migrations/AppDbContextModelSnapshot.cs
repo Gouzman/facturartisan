@@ -71,6 +71,8 @@ namespace FacturArtisan.Api.Migrations
 
                     b.HasIndex("ClientId");
 
+                    b.HasIndex("CreatedAt");
+
                     b.ToTable("Devis");
                 });
 
@@ -129,9 +131,48 @@ namespace FacturArtisan.Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedAt");
+
                     b.HasIndex("DevisId");
 
+                    b.HasIndex("Numero")
+                        .IsUnique();
+
+                    b.HasIndex("Statut");
+
                     b.ToTable("Factures");
+                });
+
+            modelBuilder.Entity("FacturArtisan.Api.Models.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("FacturArtisan.Api.Models.ServiceItem", b =>
@@ -153,6 +194,31 @@ namespace FacturArtisan.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Services");
+                });
+
+            modelBuilder.Entity("FacturArtisan.Api.Models.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("FacturArtisan.Api.Models.Devis", b =>
@@ -196,9 +262,25 @@ namespace FacturArtisan.Api.Migrations
                     b.Navigation("Devis");
                 });
 
+            modelBuilder.Entity("FacturArtisan.Api.Models.RefreshToken", b =>
+                {
+                    b.HasOne("FacturArtisan.Api.Models.User", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("FacturArtisan.Api.Models.Devis", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("FacturArtisan.Api.Models.User", b =>
+                {
+                    b.Navigation("RefreshTokens");
                 });
 #pragma warning restore 612, 618
         }

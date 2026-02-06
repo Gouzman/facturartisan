@@ -1,46 +1,42 @@
-using FacturArtisan.Api.Data;
-using FacturArtisan.Api.Models;
+using FacturArtisan.Api.Application.Interfaces;
+using FacturArtisan.Api.Application.DTOs.Devis;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace FacturArtisan.Api.Controllers;
 
 [ApiController]
 [Route("api/devis")]
+[Authorize]
 public class DevisController : ControllerBase
 {
-    private readonly AppDbContext _db;
+    private readonly IDevisService _devis;
 
-    public DevisController(AppDbContext db)
+    public DevisController(IDevisService devis)
     {
-        _db = db;
+        _devis = devis;
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
     {
-        var devis = await _db.Devis
-            .Include(d => d.Client)
-            .Include(d => d.Items)
-                .ThenInclude(i => i.ServiceItem)
-            .OrderByDescending(d => d.CreatedAt)
-            .ToListAsync();
+        if (page < 1) return BadRequest("page doit être >= 1");
+        if (pageSize < 1) return BadRequest("pageSize doit être >= 1");
+        if (pageSize > 100) pageSize = 100;
 
-        return Ok(devis);
+        var result = await _devis.GetDevis(page, pageSize);
+        return Ok(result);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] Devis devis)
+    public async Task<IActionResult> Create([FromBody] CreateDevisRequest request)
     {
-        devis.Total = devis.Items.Sum(i =>
-        {
-            i.Total = i.Quantite * i.PrixUnitaire;
-            return i.Total;
-        });
+        var (ok, error, devis) = await _devis.CreateDevis(request);
+        if (ok && devis != null) return Ok(devis);
 
-        _db.Devis.Add(devis);
-        await _db.SaveChangesAsync();
+        if (string.Equals(error, "Client introuvable", StringComparison.OrdinalIgnoreCase))
+            return NotFound(error);
 
-        return Ok(devis);
+        return BadRequest(error ?? "Erreur lors de la création du devis");
     }
 }
