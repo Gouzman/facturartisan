@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Npgsql;
+using Serilog;
 using System.Net;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -23,6 +24,15 @@ using System.Text;
 using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Serilog (config via appsettings)
+builder.Host.UseSerilog((context, services, loggerConfig) =>
+{
+    loggerConfig
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext();
+});
 
 // DEV fallback (sans secrets commit): dotnet user-secrets
 if (builder.Environment.IsDevelopment())
@@ -335,6 +345,25 @@ builder.Services.AddSwaggerGen(c =>
 var app = builder.Build();
 
 app.UseForwardedHeaders();
+
+// Enrich logs inside request scope (RequestId/UserId/IP)
+app.UseMiddleware<SerilogEnrichmentMiddleware>();
+
+// Request logging (one log per HTTP request)
+app.UseSerilogRequestLogging(options =>
+{
+    options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+    {
+        diagnosticContext.Set("RequestId", httpContext.TraceIdentifier);
+        diagnosticContext.Set("IP", httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown");
+
+        var userId = httpContext.User?.FindFirstValue(JwtRegisteredClaimNames.Sub)
+                     ?? httpContext.User?.FindFirstValue("sub")
+                     ?? httpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        diagnosticContext.Set("UserId", userId ?? string.Empty);
+    };
+});
 
 if (!app.Environment.IsDevelopment())
 {

@@ -161,3 +161,12 @@
 /Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/FluentValidation.dll
 /Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/FluentValidation.AspNetCore.dll
 /Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/FluentValidation.DependencyInjectionExtensions.dll
+/Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/Serilog.dll
+/Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/Serilog.AspNetCore.dll
+/Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/Serilog.Extensions.Hosting.dll
+/Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/Serilog.Extensions.Logging.dll
+/Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/Serilog.Formatting.Compact.dll
+/Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/Serilog.Settings.Configuration.dll
+/Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/Serilog.Sinks.Console.dll
+/Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/Serilog.Sinks.Debug.dll
+/Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/Serilog.Sinks.File.dll
