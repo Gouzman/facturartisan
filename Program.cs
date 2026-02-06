@@ -2,6 +2,7 @@ using FacturArtisan.Api.Data;
 using FacturArtisan.Api.Application.Interfaces;
 using FacturArtisan.Api.Application.Services;
 using FacturArtisan.Api.HealthChecks;
+using FacturArtisan.Api.Middleware;
 using FacturArtisan.Api.Services;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -195,6 +196,8 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 var corsPolicyName = app.Environment.IsDevelopment() ? "DevelopmentCors" : "ProductionCors";
 

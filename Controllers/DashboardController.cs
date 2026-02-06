@@ -19,18 +19,7 @@ public class DashboardController : ControllerBase
     [HttpGet("stats")]
     public async Task<IActionResult> GetStats()
     {
-        try
-        {
-            var stats = await _dashboard.GetMonthlyStatsUtc();
-            return Ok(stats);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new
-            {
-                error = "Dashboard stats error",
-                details = ex.Message
-            });
-        }
+        var stats = await _dashboard.GetMonthlyStatsUtc();
+        return Ok(stats);
     }
 }
