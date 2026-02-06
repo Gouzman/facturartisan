@@ -146,8 +146,7 @@ builder.Services.AddRateLimiter(options =>
 
         if (path.StartsWith("/swagger", StringComparison.OrdinalIgnoreCase)
             || string.Equals(path, "/health", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(path, "/db-health", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(path, "/memory-health", StringComparison.OrdinalIgnoreCase))
+            || string.Equals(path, "/db-health", StringComparison.OrdinalIgnoreCase))
         {
             return RateLimitPartition.GetNoLimiter("public");
         }
@@ -309,10 +308,19 @@ builder.Services
 builder.Services.AddAuthorization();
 
 // Health checks
-builder.Services.AddHealthChecks()
-    .AddCheck("self", () => Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy())
-    .AddCheck<DbHealthCheck>("db")
-    .AddCheck<MemoryHealthCheck>("memory");
+var healthChecks = builder.Services.AddHealthChecks()
+    .AddCheck("self", () => Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy());
+
+if (builder.Configuration.GetValue<bool>("HealthChecks:UseDbContextCheck"))
+{
+    healthChecks.AddDbContextCheck<AppDbContext>(name: "db");
+}
+else
+{
+    healthChecks.AddNpgSql(
+        connectionString: builder.Configuration.GetConnectionString("DefaultConnection") ?? string.Empty,
+        name: "db");
+}
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -447,10 +455,8 @@ app.MapHealthChecks("/db-health", new HealthCheckOptions
     ResponseWriter = HealthCheckResponseWriter.WriteJson
 });
 
-app.MapHealthChecks("/memory-health", new HealthCheckOptions
-{
-    Predicate = r => string.Equals(r.Name, "memory", StringComparison.OrdinalIgnoreCase),
-    ResponseWriter = HealthCheckResponseWriter.WriteJson
-});
-
 app.Run();
+
+public partial class Program
+{
+}

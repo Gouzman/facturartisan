@@ -170,3 +170,8 @@
 /Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/Serilog.Sinks.Console.dll
 /Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/Serilog.Sinks.Debug.dll
 /Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/Serilog.Sinks.File.dll
+/Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/HealthChecks.NpgSql.dll
+/Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/Microsoft.Extensions.Diagnostics.HealthChecks.dll
+/Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions.dll
+/Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore.dll
+/Users/gouzman/Documents/facturartisan/FacturArtisan.Api/bin/Debug/net8.0/Microsoft.Extensions.Options.dll
